@@ -5,13 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.maheshbhatt.datastore_sample.ui.screen.TodoScreen
 import com.maheshbhatt.datastore_sample.ui.theme.DataStoreSampleTheme
+import com.maheshbhatt.datastore_sample.ui.viewmodel.TodoViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +19,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             DataStoreSampleTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    // Initialize ViewModel with Application context
+                    val viewModel: TodoViewModel = viewModel(
+                        factory = ViewModelFactory(application)
+                    )
+                    
+                    TodoScreen(
+                        viewModel = viewModel,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
@@ -30,18 +34,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DataStoreSampleTheme {
-        Greeting("Android")
+/**
+ * Factory for creating TodoViewModel with Application context.
+ */
+class ViewModelFactory(
+    private val application: android.app.Application
+) : androidx.lifecycle.ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TodoViewModel::class.java)) {
+            return TodoViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
