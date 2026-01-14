@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.maheshbhatt.datastore_sample";
+option java_multiple_files = true;
+
+message Todo {
+  string id = 1;
+  string title = 2;
+  bool completed = 3;
+}
+
+message TodoList {
+  repeated Todo todos = 1;
+}
